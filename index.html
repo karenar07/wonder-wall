@@ -373,22 +373,41 @@
       display: none;
       flex-direction: column;
       min-height: 100vh;
-      position: relative;
     }
 
-    /* Compact title strip */
+    /* Row below the header: sidebar + wall */
+    .wall-body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ── Left sidebar: title + input ──────────────────────────────── */
+    .wall-sidebar {
+      width: 290px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 24px 20px 24px 28px;
+      border-right: 1px solid var(--c-border);
+      position: sticky;
+      top: 0;
+      height: calc(100vh - 54px); /* subtract header height */
+      overflow-y: auto;
+    }
+
     .wall-hero {
-      padding: 18px 320px 14px 32px; /* right padding makes room for floating panel */
       text-align: left;
     }
 
     .wall-hero h1 {
       font-family: 'Inter', sans-serif;
-      font-size: clamp(22px, 3vw, 30px);
+      font-size: clamp(20px, 2.2vw, 26px);
       font-weight: 700;
-      line-height: 1.2;
+      line-height: 1.25;
       color: var(--c-text);
-      margin-bottom: 4px;
+      margin-bottom: 8px;
       letter-spacing: -.02em;
     }
     .wall-hero h1 em {
@@ -398,16 +417,12 @@
 
     .wall-hero p {
       font-size: 13px; color: var(--c-muted);
-      line-height: 1.55;
+      line-height: 1.6;
     }
 
-    /* ── Floating add-note panel (top-right) ──────────────────────── */
+    /* ── Add-note panel (inside sidebar) ─────────────────────────── */
     .add-note-wrap {
-      position: fixed;
-      top: 60px;
-      right: 20px;
-      z-index: 150;
-      width: 280px;
+      width: 100%;
     }
 
     .add-note-panel {
@@ -415,7 +430,7 @@
       border: 1px solid rgba(140,227,208,0.22);
       border-radius: 16px;
       padding: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,.5), 0 0 0 1px rgba(140,227,208,0.06);
+      box-shadow: 0 4px 20px rgba(0,0,0,.3);
     }
 
     .note-input {
@@ -428,7 +443,7 @@
       font-family: 'Patrick Hand', cursive;
       font-size: 18px;
       resize: none;
-      height: 90px;
+      height: 100px;
       outline: none;
       transition: border-color .2s;
       margin-bottom: 10px;
@@ -440,6 +455,7 @@
     .note-footer {
       display: flex; align-items: center;
       justify-content: space-between; gap: 8px;
+      flex-wrap: wrap;
     }
 
     .author-input {
@@ -452,8 +468,7 @@
       font-size: 12px;
       outline: none;
       transition: border-color .2s;
-      width: 120px;
-      min-width: 0;
+      width: 100%;
     }
     .author-input:focus { border-color: var(--c-accent); }
     .author-input::placeholder { color: var(--c-muted2); }
@@ -466,12 +481,14 @@
     /* ── The Wall itself ──────────────────────────────────────────── */
     .notes-wall {
       flex: 1;
-      padding: 8px 32px 100px;
+      padding: 24px 28px 100px;
       display: flex;
       flex-wrap: wrap;
       gap: 18px;
       align-content: flex-start;
       justify-content: center;
+      overflow: hidden; /* notes can never bleed into sidebar */
+      min-width: 0;
     }
 
     .sticky {
@@ -573,18 +590,24 @@
     /* ═══════════════════════════════════════
        RESPONSIVE
     ═══════════════════════════════════════ */
-    @media (max-width: 640px) {
+    @media (max-width: 700px) {
       .site-header { padding: 12px 18px; }
       .dash-hero { padding: 40px 20px 32px; }
       .create-card { padding: 22px 18px; }
       .input-row { flex-direction: column; }
       .sessions-wrap { padding: 0 18px 60px; }
-      .wall-hero { padding: 14px 14px 10px; }
-      .add-note-wrap { width: calc(100% - 28px); right: 14px; top: 56px; }
-      .notes-wall { padding: 16px 12px 100px; gap: 12px; }
+      /* On mobile, stack sidebar above wall */
+      .wall-body { flex-direction: column; }
+      .wall-sidebar {
+        width: 100%; height: auto;
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid var(--c-border);
+        padding: 16px 18px;
+        gap: 12px;
+      }
+      .notes-wall { padding: 16px 12px 100px; gap: 12px; overflow: visible; }
       .sticky { width: 154px; min-height: 136px; }
-      .note-footer { flex-wrap: wrap; }
-      .author-input { width: 100%; }
     }
   </style>
 </head>
@@ -700,30 +723,38 @@
     </div>
   </header>
 
-  <div class="wall-hero">
-    <h1>What are you <em>wondering</em> right now?</h1>
-    <p id="wall-subline">There are no right or wrong questions. Add yours and see what others are wondering too.</p>
-  </div>
+  <div class="wall-body">
 
-  <div class="add-note-wrap">
-    <div class="add-note-panel">
-      <textarea
-        id="note-text"
-        class="note-input"
-        placeholder=""
-        maxlength="200"
-        oninput="updateCharHint()"
-      ></textarea>
-      <div class="note-footer">
-        <input id="note-author" class="author-input" type="text" placeholder="Your name (optional)" maxlength="40" />
-        <span class="char-hint" id="char-hint">200</span>
-        <button class="btn btn-primary" onclick="addNote()">Add to wall ✦</button>
+    <!-- ── Left sidebar: title + input ── -->
+    <div class="wall-sidebar">
+      <div class="wall-hero">
+        <h1>What are you <em>wondering</em> right now?</h1>
+        <p id="wall-subline">There are no right or wrong questions. Add yours and see what others are wondering too.</p>
+      </div>
+
+      <div class="add-note-wrap">
+        <div class="add-note-panel">
+          <textarea
+            id="note-text"
+            class="note-input"
+            placeholder=""
+            maxlength="200"
+            oninput="updateCharHint()"
+          ></textarea>
+          <div class="note-footer">
+            <input id="note-author" class="author-input" type="text" placeholder="Your name (optional)" maxlength="40" />
+            <span class="char-hint" id="char-hint">200</span>
+            <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="addNote()">Add to wall ✦</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="notes-wall" id="notes-wall">
-    <!-- notes injected here -->
+    <!-- ── Right: sticky notes wall ── -->
+    <div class="notes-wall" id="notes-wall">
+      <!-- notes injected here -->
+    </div>
+
   </div>
 
   <!-- Live counter -->
