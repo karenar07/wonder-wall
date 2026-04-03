@@ -723,9 +723,11 @@
           maxlength="200"
           oninput="updateCharHint()"
         ></textarea>
+        <div style="text-align:right;margin:-6px 0 8px">
+          <span class="char-hint" id="char-hint">200</span>
+        </div>
         <div class="note-footer">
           <input id="note-author" class="author-input" type="text" placeholder="Your name (optional)" maxlength="40" />
-          <span class="char-hint" id="char-hint">200</span>
           <button class="btn btn-primary" onclick="addNote()">Add to wall ✦</button>
         </div>
       </div>
