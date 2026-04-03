@@ -6,8 +6,8 @@
   <title>Wonder Wall · AutogenAI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <!-- Inter: AutogenAI's official free/digital font replacement (brand guidelines) -->
-  <!-- Caveat: handwritten style for sticky note text -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Patrick Hand: clean, readable handwritten style for sticky notes -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Patrick+Hand&display=swap" rel="stylesheet" />
 
   <style>
     /* ════════════════════════════════════════════════
@@ -338,12 +338,6 @@
     /* ═══════════════════════════════════════
        WONDER WALL PAGE
     ═══════════════════════════════════════ */
-    #page-wall {
-      display: none;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
     .wall-subheader {
       padding: 10px 32px;
       background: rgba(8,14,26,0.7);
@@ -374,19 +368,28 @@
       50% { opacity: .5; transform: scale(.8); }
     }
 
-    /* Prompt area */
+    /* ── Wall page layout ─────────────────────────────────────────── */
+    #page-wall {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Compact title strip */
     .wall-hero {
-      padding: 36px 40px 20px;
-      text-align: center;
+      padding: 18px 320px 14px 32px; /* right padding makes room for floating panel */
+      text-align: left;
     }
 
     .wall-hero h1 {
-      font-family: 'Caveat', cursive;
-      font-size: clamp(34px, 6vw, 52px);
-      font-weight: 600;
-      line-height: 1.15;
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 700;
+      line-height: 1.2;
       color: var(--c-text);
-      margin-bottom: 8px;
+      margin-bottom: 4px;
+      letter-spacing: -.02em;
     }
     .wall-hero h1 em {
       color: var(--c-accent);
@@ -394,63 +397,41 @@
     }
 
     .wall-hero p {
-      font-size: 14px; color: var(--c-muted);
-      max-width: 420px; margin: 0 auto;
-      line-height: 1.65;
+      font-size: 13px; color: var(--c-muted);
+      line-height: 1.55;
     }
 
-    /* Add-note panel */
+    /* ── Floating add-note panel (top-right) ──────────────────────── */
     .add-note-wrap {
-      padding: 0 40px 28px;
-      display: flex; justify-content: center;
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      z-index: 150;
+      width: 280px;
     }
 
     .add-note-panel {
       background: var(--c-surface);
-      border: 1px solid rgba(0,212,170,0.2);
-      border-radius: 18px;
-      padding: 24px;
-      width: 100%;
-      max-width: 600px;
-      box-shadow: 0 0 30px rgba(0,212,170,0.05);
+      border: 1px solid rgba(140,227,208,0.22);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.5), 0 0 0 1px rgba(140,227,208,0.06);
     }
 
-    /* Color selector */
-    .color-row {
-      display: flex; gap: 8px; align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .color-row-label {
-      font-size: 11px; color: var(--c-muted); flex-shrink: 0;
-    }
-
-    .color-dot {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: transform .15s, border-color .15s;
-      flex-shrink: 0;
-    }
-    .color-dot:hover { transform: scale(1.25); }
-    .color-dot.on { transform: scale(1.2); border-color: white; }
-
-    /* Rotating prompt placeholders */
     .note-input {
       width: 100%;
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--c-border);
-      border-radius: 12px;
-      padding: 14px 16px;
+      border-radius: 10px;
+      padding: 12px 14px;
       color: var(--c-text);
-      font-family: 'Caveat', cursive;
-      font-size: 20px;
+      font-family: 'Patrick Hand', cursive;
+      font-size: 18px;
       resize: none;
-      height: 108px;
+      height: 90px;
       outline: none;
       transition: border-color .2s;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       line-height: 1.4;
     }
     .note-input:focus { border-color: var(--c-accent); }
@@ -458,33 +439,34 @@
 
     .note-footer {
       display: flex; align-items: center;
-      justify-content: space-between; gap: 10px;
+      justify-content: space-between; gap: 8px;
     }
 
     .author-input {
       background: rgba(255,255,255,0.04);
       border: 1px solid var(--c-border);
       border-radius: 8px;
-      padding: 9px 13px;
+      padding: 8px 10px;
       color: var(--c-text);
       font-family: 'Inter', sans-serif;
-      font-size: 13px;
+      font-size: 12px;
       outline: none;
       transition: border-color .2s;
-      width: 180px;
+      width: 120px;
+      min-width: 0;
     }
     .author-input:focus { border-color: var(--c-accent); }
     .author-input::placeholder { color: var(--c-muted2); }
 
     .char-hint {
-      font-size: 11px; color: var(--c-muted2);
+      font-size: 10px; color: var(--c-muted2);
       flex-shrink: 0;
     }
 
     /* ── The Wall itself ──────────────────────────────────────────── */
     .notes-wall {
       flex: 1;
-      padding: 24px 32px 100px;
+      padding: 8px 32px 100px;
       display: flex;
       flex-wrap: wrap;
       gap: 18px;
@@ -534,7 +516,7 @@
     }
 
     .sticky-text {
-      font-family: 'Caveat', cursive;
+      font-family: 'Patrick Hand', cursive;
       font-size: 17px;
       line-height: 1.5;
       color: #1a1a2e;
@@ -597,8 +579,8 @@
       .create-card { padding: 22px 18px; }
       .input-row { flex-direction: column; }
       .sessions-wrap { padding: 0 18px 60px; }
-      .wall-hero { padding: 24px 18px 16px; }
-      .add-note-wrap { padding: 0 18px 20px; }
+      .wall-hero { padding: 14px 14px 10px; }
+      .add-note-wrap { width: calc(100% - 28px); right: 14px; top: 56px; }
       .notes-wall { padding: 16px 12px 100px; gap: 12px; }
       .sticky { width: 154px; min-height: 136px; }
       .note-footer { flex-wrap: wrap; }
@@ -719,20 +701,16 @@
   </header>
 
   <div class="wall-hero">
-    <h1>What are you <em>wondering</em>?</h1>
-    <p id="wall-subline">There are no wrong questions — just curiosity. Add yours and see what others are thinking too.</p>
+    <h1>What are you <em>wondering</em> right now?</h1>
+    <p id="wall-subline">There are no right or wrong questions. Add yours and see what others are wondering too.</p>
   </div>
 
   <div class="add-note-wrap">
     <div class="add-note-panel">
-      <div class="color-row">
-        <span class="color-row-label">Note colour:</span>
-        <div id="color-picker"></div>
-      </div>
       <textarea
         id="note-text"
         class="note-input"
-        placeholder="I wonder…"
+        placeholder=""
         maxlength="200"
         oninput="updateCharHint()"
       ></textarea>
@@ -786,36 +764,22 @@
    APP LOGIC
 ════════════════════════════════════════════════════════════ */
 
-// AutogenAI brand-aligned note colours (from official palette)
+// AutogenAI brand-aligned note colours — cycle automatically
 const NOTE_COLORS = [
-  { bg: '#f7f4f2', name: 'cream'    },   // N100 — brand neutral
-  { bg: '#c1e5d8', name: 'teal'     },   // T100 — teal tint
-  { bg: '#c5d8eb', name: 'blue'     },   // B100 — blue tint
-  { bg: '#ddcdbf', name: 'sand'     },   // N300 — warm sand
-  { bg: '#cdd0f7', name: 'lavender' },   // P100 — purple tint
-  { bg: '#f0ccaf', name: 'peach'    },   // O100 — warm peach
+  '#c1e5d8',   // T100 — teal tint
+  '#f0ccaf',   // O100 — warm peach
+  '#c5d8eb',   // B100 — blue tint
+  '#f7f4f2',   // N100 — cream
+  '#cdd0f7',   // P100 — lavender
+  '#ddcdbf',   // N300 — warm sand
 ];
 
-// Rotating placeholder prompts (bid-writing flavoured, lightly)
-const WONDER_PROMPTS = [
-  "I wonder…",
-  "I wonder how AI could change the way we write bids…",
-  "I wonder what our evaluators really look for…",
-  "I wonder if there's a faster way to get to first draft…",
-  "I wonder what a winning proposal feels like to read…",
-  "I wonder what I'd do with the time this saves…",
-  "I wonder what question I've been afraid to ask…",
-];
-
-let sb         = null;   // Supabase client
-let selectedBg = NOTE_COLORS[0].bg;
-let sessionId  = null;
+let sb          = null;   // Supabase client
+let sessionId   = null;
+let noteCount   = 0;      // used to cycle colours
 
 /* ─── Bootstrap ─────────────────────────────────────────── */
 window.addEventListener('load', () => {
-  buildColorPicker();
-  rotatePlaceholders();
-
   const isConfigured = SUPABASE_URL !== "YOUR_SUPABASE_URL";
   if (isConfigured) {
     try {
@@ -928,9 +892,10 @@ async function addNote() {
   if (!sb || !sessionId) return;
 
   const rotation = +(Math.random() * 7 - 3.5).toFixed(1);
+  const color = NOTE_COLORS[noteCount % NOTE_COLORS.length];
   const { error } = await sb.from('notes').insert([{
     session_id: sessionId, text, author: author || null,
-    color: selectedBg, rotation, created_at: Date.now()
+    color, rotation, created_at: Date.now()
   }]);
   if (error) { console.error(error); showToast('Something went wrong — try again'); return; }
   document.getElementById('note-text').value = '';
@@ -948,6 +913,7 @@ async function listenNotes(sid) {
   (existing || []).forEach(note => {
     renderNote(note.id, note);
     rendered.add(note.id);
+    noteCount++;
   });
   document.getElementById('wonder-count').textContent = rendered.size;
 
@@ -958,6 +924,7 @@ async function listenNotes(sid) {
       ({ new: note }) => {
         if (!rendered.has(note.id)) {
           rendered.add(note.id);
+          noteCount++;
           renderNote(note.id, note);
           document.getElementById('wonder-count').textContent = rendered.size;
         }
@@ -1004,44 +971,6 @@ async function exportNotes() {
   });
   a.click();
   showToast('📄 Export downloaded!');
-}
-
-/* ─── Color picker ──────────────────────────────────────── */
-function buildColorPicker() {
-  const picker = document.getElementById('color-picker');
-  NOTE_COLORS.forEach((c, i) => {
-    const d = document.createElement('div');
-    d.className = 'color-dot' + (i===0 ? ' on' : '');
-    d.style.background = c.bg;
-    d.title = c.name;
-    d.onclick = () => {
-      document.querySelectorAll('.color-dot').forEach(x => x.classList.remove('on'));
-      d.classList.add('on');
-      selectedBg = c.bg;
-      document.getElementById('note-text').style.background = hexToRgba(c.bg, .12);
-    };
-    picker.appendChild(d);
-  });
-}
-
-function hexToRgba(hex, a) {
-  const r = parseInt(hex.slice(1,3),16);
-  const g = parseInt(hex.slice(3,5),16);
-  const b = parseInt(hex.slice(5,7),16);
-  return `rgba(${r},${g},${b},${a})`;
-}
-
-/* ─── Rotating placeholder ──────────────────────────────── */
-let promptIdx = 0;
-function rotatePlaceholders() {
-  const ta = document.getElementById('note-text');
-  if (!ta) return;
-  setInterval(() => {
-    if (document.activeElement !== ta && !ta.value) {
-      promptIdx = (promptIdx + 1) % WONDER_PROMPTS.length;
-      ta.placeholder = WONDER_PROMPTS[promptIdx];
-    }
-  }, 4000);
 }
 
 /* ─── Char counter ──────────────────────────────────────── */
